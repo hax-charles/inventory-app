@@ -3,13 +3,14 @@ import type { Box } from '../types';
 import { ICONS } from '../constants';
 
 interface DashboardProps {
+  isLoading: boolean;
   boxes: Box[];
   onNavigateToScanner: () => void;
   onShowAllBoxes: () => void;
   onSearch: (query: string) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ boxes, onNavigateToScanner, onShowAllBoxes, onSearch }) => {
+const Dashboard: React.FC<DashboardProps> = ({ isLoading, boxes, onNavigateToScanner, onShowAllBoxes, onSearch }) => {
   const [searchInput, setSearchInput] = useState('');
 
   const totalItems = useMemo(() => boxes.reduce((sum, box) => sum + box.items.length, 0), [boxes]);
@@ -47,10 +48,15 @@ const Dashboard: React.FC<DashboardProps> = ({ boxes, onNavigateToScanner, onSho
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="e.g., Laptop Charger"
-              className="w-full px-3 py-2 bg-base-900 border border-base-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder={isLoading ? "Loading..." : "e.g., Laptop Charger"}
+              className="w-full px-3 py-2 bg-base-900 border border-base-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+              disabled={isLoading}
             />
-            <button type="submit" className="bg-primary text-white p-2.5 rounded-md hover:bg-accent transition-colors shrink-0">
+            <button 
+              type="submit" 
+              className="bg-primary text-white p-2.5 rounded-md hover:bg-accent transition-colors shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading}
+            >
               {ICONS.search}
             </button>
           </div>
@@ -59,13 +65,17 @@ const Dashboard: React.FC<DashboardProps> = ({ boxes, onNavigateToScanner, onSho
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
           <button 
             onClick={onNavigateToScanner}
-            className="w-full flex items-center justify-center gap-2 bg-accent text-white font-bold py-3 px-4 rounded-md hover:bg-blue-600 transition-colors">
+            className="w-full flex items-center justify-center gap-2 bg-accent text-white font-bold py-3 px-4 rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
             {ICONS.qr}
             <span>Scan Box</span>
           </button>
           <button 
             onClick={onShowAllBoxes}
-            className="w-full flex items-center justify-center gap-2 bg-base-700 text-white font-bold py-3 px-4 rounded-md hover:bg-gray-600 transition-colors">
+            className="w-full flex items-center justify-center gap-2 bg-base-700 text-white font-bold py-3 px-4 rounded-md hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
             {ICONS.list}
             <span>See All Boxes</span>
           </button>

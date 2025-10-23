@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { View } from './types';
 import type { Box } from './types';
 import Dashboard from './components/Dashboard';
@@ -7,21 +7,24 @@ import AllBoxesView from './components/AllBoxesView';
 import SearchView from './components/SearchView';
 import ScannerView from './components/ScannerView';
 import { ICONS } from './constants';
+import { getBoxes, saveBoxes as saveBoxesToStorage } from './services/storageService';
 
 const App: React.FC = () => {
   const [view, setView] = useState<View>(View.Dashboard);
   const [activeBoxId, setActiveBoxId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  
-  const [boxes, setBoxes] = useState<Box[]>(() => {
-    try {
-      const savedBoxes = localStorage.getItem('inventory_boxes');
-      return savedBoxes ? JSON.parse(savedBoxes) : [];
-    } catch (error) {
-      console.error("Failed to load boxes from localStorage", error);
-      return [];
-    }
-  });
+  const [boxes, setBoxes] = useState<Box[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadBoxes = async () => {
+      setIsLoading(true);
+      const fetchedBoxes = await getBoxes();
+      setBoxes(fetchedBoxes);
+      setIsLoading(false);
+    };
+    loadBoxes();
+  }, []);
 
   const allItemNames = useMemo(() => {
     const itemNames = new Set<string>();
@@ -33,12 +36,13 @@ const App: React.FC = () => {
     return Array.from(itemNames);
   }, [boxes]);
 
-  const saveBoxes = useCallback((newBoxes: Box[]) => {
-    setBoxes(newBoxes);
+  const saveBoxes = useCallback(async (newBoxes: Box[]) => {
+    setBoxes(newBoxes); // Optimistically update the UI
     try {
-      localStorage.setItem('inventory_boxes', JSON.stringify(newBoxes));
+      await saveBoxesToStorage(newBoxes);
     } catch (error) {
-      console.error("Failed to save boxes to localStorage", error);
+      console.error("Failed to save boxes:", error);
+      // In a real app, you might show an error to the user and revert the state
     }
   }, []);
 
@@ -67,6 +71,15 @@ const App: React.FC = () => {
   }, []);
 
   const renderView = () => {
+    if (isLoading) {
+      return (
+        <div className="flex flex-col justify-center items-center h-64 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+          <p className="text-lg text-gray-300">Loading Shared Boxes...</p>
+        </div>
+      );
+    }
+
     switch(view) {
       case View.ScannerView:
         return <ScannerView 
@@ -97,6 +110,7 @@ const App: React.FC = () => {
       case View.Dashboard:
       default:
         return <Dashboard 
+          isLoading={isLoading}
           boxes={boxes} 
           onNavigateToScanner={handleNavigateToScanner} 
           onShowAllBoxes={handleShowAllBoxes}
