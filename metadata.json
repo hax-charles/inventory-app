@@ -1,0 +1,7 @@
+{
+  "name": "Inventory QR Manager",
+  "description": "A mobile-first web application for managing inventory in boxes using QR codes. Users can add, search, and edit items within boxes, with AI-powered tagging to streamline organization.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventory QR Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'primary': '#3b82f6',
+              'secondary': '#60a5fa',
+              'accent': '#2563eb',
+              'neutral': '#d1d5db',
+              'base-900': '#111827',
+              'base-800': '#1f2937',
+              'base-700': '#374151',
+              'info': '#2563eb',
+              'success': '#16a34a',
+              'warning': '#facc15',
+              'error': '#ef4444',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Style overrides for html5-qrcode */
+      #qr-reader {
+          border: none !important;
+          position: relative;
+      }
+      #qr-reader video {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover;
+          border-radius: 0.5rem; /* match rounded-lg */
+      }
+      /* Hide the library's footer with "QR code scanning by..." and file input */
+      #qr-reader__dashboard_section_csr, 
+      #qr-reader__dashboard_section_swaplink,
+      #qr-reader-alt-text,
+      #qr-reader__dashboard_section > div:first-child { /* Hides file scan region */
+          display: none !important;
+      }
+      /* Style the camera selection dropdown */
+      #qr-reader__dashboard_section_camera_selection {
+          padding: 10px 0;
+          background-color: transparent;
+      }
+      #qr-reader__camera_selection {
+          width: 100%;
+          padding: 8px;
+          border-radius: 6px;
+          background-color: #374151; /* base-700 */
+          color: white;
+          border: 1px solid #4b5563; /* base-600 */
+      }
+  </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.26.0",
+    "html5-qrcode": "https://aistudiocdn.com/html5-qrcode@^2.3.8"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-base-900">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
